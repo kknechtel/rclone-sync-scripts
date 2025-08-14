@@ -1,0 +1,19 @@
+MANUAL GOOGLE DRIVE AUTHORIZATION INSTRUCTIONS
+==============================================
+
+Since port 53682 is in use, we'll use the manual method:
+
+1. Open this URL in your browser:
+   https://accounts.google.com/o/oauth2/auth?access_type=offline&client_id=738415475416-80b73usm0bf7mbk0r5j7hckucsmi9mst.apps.googleusercontent.com&redirect_uri=http://127.0.0.1:53682/&response_type=code&scope=https://www.googleapis.com/auth/drive&state=state
+
+2. Log in to your Google account and authorize the application
+
+3. You'll get an error page saying "This site can't be reached" - THIS IS NORMAL!
+
+4. Look at the URL in your browser's address bar. It will look like:
+   http://127.0.0.1:53682/?code=4/0AxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxQ&scope=https://www.googleapis.com/auth/drive
+
+5. Copy the CODE part (everything after "code=" and before "&scope=")
+   Example: 4/0AxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxQ
+
+6. Now we'll exchange this code for a token using the script below.

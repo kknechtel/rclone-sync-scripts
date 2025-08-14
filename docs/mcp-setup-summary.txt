@@ -1,0 +1,40 @@
+MCP Servers Setup Summary for karl
+==================================
+
+Installation Directory: /home/karl/mcp/servers/
+
+Installed Servers:
+1. Context7 - Documentation helper
+2. Serena - Advanced coding assistant
+3. Brave Search - Web search and content fetching
+4. GitHub - Repository management
+5. Filesystem - Local file access
+6. Puppeteer - Browser automation
+7. PostgreSQL - Database operations
+8. Memory - Context persistence
+
+Configuration File Location:
+- WSL: ~/mcp-claude-config-final.json
+- Windows: C:\Users\[YourWindowsUsername]\AppData\Roaming\Claude\claude_desktop_config.json
+
+Quick Commands:
+- Edit Claude config: edit-claude-config
+- Verify installations: verify-mcp-servers
+- Manage servers: mcp-manager {list|test|logs|update}
+- Debug issues: mcp-debug
+
+Next Steps:
+1. Add your API keys to:
+   - /home/karl/mcp/servers/brave-search-mcp/.env
+   - /home/karl/mcp/servers/github-mcp/.env
+
+2. Copy the config to Claude Desktop:
+   cat ~/mcp-claude-config-final.json
+   Then run: edit-claude-config
+
+3. Restart Claude Desktop
+
+Working Directories:
+- Projects: /home/karl/workspaces/active
+- MCP Projects: /home/karl/mcp/projects
+- Claude Sessions: /home/karl/Documents/claude-sessions

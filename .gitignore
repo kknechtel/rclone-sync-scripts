@@ -1,0 +1,33 @@
+# Rclone configuration (contains tokens)
+rclone.conf
+.rclone.conf
+
+# OAuth tokens and secrets
+*token*
+*secret*
+*credentials*
+client_secret*.json
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# Backup files
+*.bak
+*.backup
+
+# Private configuration
+config/private/
+config/tokens/
