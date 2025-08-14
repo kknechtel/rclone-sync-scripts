@@ -99,7 +99,25 @@ rclone size RemoteName:Path
 
 ## WebUI Access
 
-Start the rclone WebUI:
+### Option 1: Enhanced Transfer UI (Recommended)
+
+We've created a custom transfer UI with better file browsing and transfer capabilities:
+
+```bash
+./start-transfer-ui.sh
+```
+
+Access at: http://localhost:8080
+
+Features:
+- Dual-pane file browser
+- Select multiple files for transfer
+- Visual transfer queue
+- Easy navigation between folders
+
+### Option 2: Standard rclone WebUI
+
+Start the standard rclone WebUI:
 ```bash
 rclone rcd --rc-web-gui --rc-user=admin --rc-pass=admin --rc-addr=:5572
 ```

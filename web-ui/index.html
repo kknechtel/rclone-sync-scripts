@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rclone Transfer Manager</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .panel {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .panel-header {
+            background: #34495e;
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .remote-selector {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .remote-selector select {
+            padding: 5px 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        
+        .file-browser {
+            height: 400px;
+            overflow-y: auto;
+            padding: 10px;
+        }
+        
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .file-item:hover {
+            background: #f0f0f0;
+        }
+        
+        .file-item.selected {
+            background: #3498db;
+            color: white;
+        }
+        
+        .file-icon {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        
+        .file-info {
+            flex: 1;
+        }
+        
+        .file-name {
+            font-weight: 500;
+        }
+        
+        .file-size {
+            font-size: 0.85em;
+            color: #666;
+        }
+        
+        .selected .file-size {
+            color: #ccc;
+        }
+        
+        .transfer-controls {
+            background: #ecf0f1;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+            margin: 20px;
+        }
+        
+        .transfer-button {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin: 0 10px;
+        }
+        
+        .transfer-button:hover {
+            background: #219a52;
+        }
+        
+        .transfer-button:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+        }
+        
+        .transfer-queue {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px;
+            padding: 20px;
+        }
+        
+        .transfer-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .transfer-progress {
+            flex: 1;
+            margin: 0 20px;
+        }
+        
+        .progress-bar {
+            background: #ecf0f1;
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .progress-fill {
+            background: #3498db;
+            height: 100%;
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+        }
+        
+        .status {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status.active {
+            background: #3498db;
+            color: white;
+        }
+        
+        .status.complete {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .status.error {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .breadcrumb {
+            padding: 10px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .breadcrumb-item {
+            color: #007bff;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        
+        .breadcrumb-item:hover {
+            text-decoration: underline;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Rclone Transfer Manager</h1>
+    </div>
+    
+    <div class="container">
+        <!-- Source Panel -->
+        <div class="panel">
+            <div class="panel-header">
+                <div class="remote-selector">
+                    <label>Source:</label>
+                    <select id="source-remote">
+                        <option value="">Select Remote...</option>
+                    </select>
+                </div>
+                <button onclick="refreshSource()">🔄 Refresh</button>
+            </div>
+            <div class="breadcrumb" id="source-breadcrumb">
+                <span class="breadcrumb-item" onclick="navigateSource('/')">Root</span>
+            </div>
+            <div class="file-browser" id="source-browser">
+                <div class="loading">Select a remote to browse files</div>
+            </div>
+        </div>
+        
+        <!-- Destination Panel -->
+        <div class="panel">
+            <div class="panel-header">
+                <div class="remote-selector">
+                    <label>Destination:</label>
+                    <select id="dest-remote">
+                        <option value="">Select Remote...</option>
+                    </select>
+                </div>
+                <button onclick="refreshDest()">🔄 Refresh</button>
+            </div>
+            <div class="breadcrumb" id="dest-breadcrumb">
+                <span class="breadcrumb-item" onclick="navigateDest('/')">Root</span>
+            </div>
+            <div class="file-browser" id="dest-browser">
+                <div class="loading">Select a remote to browse files</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="transfer-controls">
+        <button class="transfer-button" onclick="transferSelected()" id="transfer-btn" disabled>
+            ➡️ Transfer Selected
+        </button>
+        <button class="transfer-button" onclick="syncFolders()" id="sync-btn" disabled>
+            🔄 Sync Folders
+        </button>
+    </div>
+    
+    <div class="transfer-queue">
+        <h3>Transfer Queue</h3>
+        <div id="transfer-list">
+            <p style="text-align: center; color: #666; padding: 20px;">No active transfers</p>
+        </div>
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>
